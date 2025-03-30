@@ -1,0 +1,45 @@
+@model CoreStartApp.Models.Db.User
+
+@{
+    ViewData["Title"] = "Регистрация";
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col text-center">
+            <h1 class="display-4">Регистрация</h1>
+            <p class="lead text-muted">Присоединяйтесь к нашему сообществу</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    @if (Model == null)
+                    {
+                        <h3>Добро пожаловать в наш блог!</h3>
+                        <br>
+                        <form method="post" class="text-start">
+                            <div class="mb-3">
+                                <label for="FirstName" class="form-label">Имя:</label>
+                                <input type="text" class="form-control" name="FirstName" required />
+                            </div>
+                            <div class="mb-3">
+                                <label for="LastName" class="form-label">Фамилия:</label>
+                                <input type="text" class="form-control" name="LastName" required />
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Регистрация</button>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        @await Html.PartialAsync("_Thanks")
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

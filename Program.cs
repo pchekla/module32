@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+
 namespace CoreStartApp
 {
     public class Program
@@ -16,7 +19,12 @@ namespace CoreStartApp
         /// </summary>
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
+                .ConfigureWebHostDefaults(webBuilder => 
+                { 
+                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseWebRoot("Views");
+                    webBuilder.UseStaticWebAssets(); // Отключаем стандартные статические файлы
+                });
     }
 
 }

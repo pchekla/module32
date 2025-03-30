@@ -20,16 +20,27 @@ namespace CoreStartApp.Middleware
         public async Task InvokeAsync(HttpContext context)
         {
             // Строка для публикации в лог
-            string logMessage = $"[{DateTime.Now}]: New request to http://{context.Request.Host.Value + context.Request.Path}{Environment.NewLine}";
+            string logMessage = $"[{DateTime.Now}]: New request to http://{context.Request.Host.Value ?? "localhost"}{context.Request.Path}{Environment.NewLine}";
             
             // Выводим в консоль
             Console.WriteLine(logMessage);
             
-            // Путь до лога
-            string logFilePath = Path.Combine(_env.ContentRootPath, "Logs", "RequestLog.txt");
-            
-            // Используем асинхронную запись в файл
-            await File.AppendAllTextAsync(logFilePath, logMessage);
+            try
+            {
+                // Путь до лога
+                string logFilePath = Path.Combine(_env.ContentRootPath, "Logs", "RequestLog.txt");
+                
+                // Используем FileStream для контроля доступа к файлу
+                using (var fileStream = new FileStream(logFilePath, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
+                using (var streamWriter = new StreamWriter(fileStream))
+                {
+                    await streamWriter.WriteAsync(logMessage);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при записи лога: {ex.Message}");
+            }
             
             // Передача запроса далее по конвейеру
             await _next.Invoke(context);

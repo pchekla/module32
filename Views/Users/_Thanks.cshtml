@@ -1,0 +1,11 @@
+@model CoreStartApp.Models.Db.User
+
+<div class="text-center">
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Успешная регистрация!</h4>
+        <p>@Model.FirstName, спасибо за регистрацию!</p>
+        <hr>
+        <p class="mb-0">Теперь вы часть нашего сообщества.</p>
+    </div>
+    <a asp-controller="Users" asp-action="Index" class="btn btn-primary">К списку пользователей</a>
+</div> 

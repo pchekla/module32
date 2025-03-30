@@ -1,0 +1,39 @@
+@model List<CoreStartApp.Models.Db.User>
+
+@{
+    ViewData["Title"] = "Пользователи";
+}
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-4 text-center">Пользователи блога</h1>
+            <p class="lead text-center text-muted">Наше активное сообщество</p>
+            <div class="text-center">
+                <a asp-action="ClearUsers" class="btn btn-danger">Очистить список пользователей</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        @foreach(var user in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center" 
+                                 style="width: 48px; height: 48px;">
+                                @user.FirstName[0]@user.LastName[0]
+                            </div>
+                            <h5 class="card-title mb-0 ms-3">@user.FirstName @user.LastName</h5>
+                        </div>
+                        <p class="card-text text-muted">
+                            <small>С нами с @user.JoinDate.ToString("dd MMMM yyyy HH:mm")</small>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

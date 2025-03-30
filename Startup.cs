@@ -1,9 +1,23 @@
 using CoreStartApp.Middleware;
+using CoreStartApp.Models.Db;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 
 namespace CoreStartApp
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
         /// <summary>
         ///  Обработчик для страницы About
         /// </summary>
@@ -27,8 +41,16 @@ namespace CoreStartApp
         // Документация:  https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            string connection = Configuration.GetConnectionString("DefaultConnection") ?? 
+                "Server=(localdb)\\mssqllocaldb;Database=BlogDb;Trusted_Connection=True;TrustServerCertificate=True;";
+            // Добавляем контекст базы данных
+            services.AddDbContext<BlogContext>(options =>
+                options.UseSqlServer(connection));
             // Добавляем сервисы в контейнер DI
-            services.AddControllers();
+            services.AddControllersWithViews();
+
+            // регистрация сервиса репозитория для взаимодействия с базой данных
+            services.AddScoped<IBlogRepository, BlogRepository>();
         }
 
         // Метод вызывается средой ASP.NET.
@@ -56,37 +78,31 @@ namespace CoreStartApp
             }
 
             app.UseHttpsRedirection();
+            // Поддержка статических файлов
             app.UseStaticFiles();
-        
             // 2. Добавляем компонент, отвечающий за маршрутизацию
             app.UseRouting();
-        
+            app.UseAuthorization();
             //Добавляем компонент для логирования запросов с использованием метода Use.
             // Подключаем логирвоание с использованием ПО промежуточного слоя
             app.UseMiddleware<LoggingMiddleware>();
+
+            // обрабатываем ошибки HTTP
+            app.UseStatusCodePages();
 
  
             // 3. Добавляем компонент с настройкой маршрутов
             // Сначала используем метод Use, чтобы не прерывать ковейер
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync($"Welcome to the {env.ApplicationName}!");
-                });
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         
             // Все прочие страницы имеют отдельные обработчики
             app.Map("/about", app => About(app, env));
             app.Map("/config", app => Config(app, env));
-        
-            // Завершим вызовом метода Run
-            // Обработчик для ошибки "страница не найдена"
-            app.Run(async (context) =>
-            {
-                await context.Response.WriteAsync($"Page not found");
-            });
-
         }
     }
 
