@@ -33,6 +33,13 @@ namespace CoreStartApp
         // Используйте его для настройки конвейера запросов
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            // Создаем директорию для логов, если она не существует
+            string logsPath = Path.Combine(env.ContentRootPath, "Logs");
+            if (!Directory.Exists(logsPath))
+            {
+                Directory.CreateDirectory(logsPath);
+            }
+
             // Настраиваем конвейер обработки HTTP-запросов
             // Проверяем, не запущен ли проект в среде разработки
             if (env.IsDevelopment() || env.IsStaging())
@@ -55,8 +62,15 @@ namespace CoreStartApp
             //Добавляем компонент для логирования запросов с использованием метода Use.
             app.Use(async (context, next) =>
             {
-                // Для логирования данных о запросе используем свойства объекта HttpContext
-                Console.WriteLine($"[{DateTime.Now}]: New request to http://{context.Request.Host.Value + context.Request.Path}");
+                // Строка для публикации в лог
+                string logMessage = $"[{DateTime.Now}]: New request to http://{context.Request.Host.Value + context.Request.Path}{Environment.NewLine}";
+                
+                // Путь до лога (опять-таки, используем свойства IWebHostEnvironment)
+                string logFilePath = Path.Combine(env.ContentRootPath, "Logs", "RequestLog.txt");
+                
+                // Используем асинхронную запись в файл
+                await File.AppendAllTextAsync(logFilePath, logMessage);
+                
                 await next.Invoke();
             });
  
