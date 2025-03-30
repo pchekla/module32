@@ -23,6 +23,11 @@ namespace CoreStartApp.Models.Db
         public DbSet<Feedback> Feedbacks { get; set; }
 
         /// <summary>
+        /// Ссылка на таблицу Requests
+        /// </summary>
+        public DbSet<Request> Requests { get; set; }
+
+        /// <summary>
         /// Логика взаимодействия с таблицами в БД
         /// </summary>
         public BlogContext(DbContextOptions<BlogContext> options) : base(options)

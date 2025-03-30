@@ -51,6 +51,7 @@ namespace CoreStartApp
 
             // регистрация сервиса репозитория для взаимодействия с базой данных
             services.AddScoped<IBlogRepository, BlogRepository>();
+            services.AddScoped<ILogRepository, LogRepository>();
         }
 
         // Метод вызывается средой ASP.NET.
